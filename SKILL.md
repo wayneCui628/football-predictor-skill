@@ -43,58 +43,58 @@ Whenever you are invoked to predict a match:
      `python [Your_Skill_Directory]\scripts\run_pipeline.py --home "Team A" --away "Team B" --output-radar "[Your_Artifact_Directory_Path]\[TeamA]_[TeamB]_radar.png" --league-avg-goals 2.75 --league-home-goals-avg 1.55 --league-away-goals-avg 1.20 --venue "home" --ref-penalty-boost 0.11 --home-missing-xg-pct 0.0 --away-missing-xg-pct 0.15 --home-xg "1.2,1.5,0.8,2.1,1.1" --home-xga "0.8,1.1,1.5,0.5,1.0" --home-poss "55,60,45,50,52" --home-pass "80,85,78,82,81" --home-ppda "10,12,8,11,9" --home-duel "50,55,48,52,51" --home-sca "20,25,18,30,22" --home-progp "40,45,35,50,42" --away-xg "..." --away-xga "..." --away-poss "..." --away-pass "..." --away-ppda "..." --away-duel "..." --away-sca "..." --away-progp "..."`
    - *If you absolutely cannot find a specific advanced stat (like PPDA or SCA) after multiple attempts, omit that specific `--flag`, and Python will use a safe default. xG and xGA are mandatory.*
    - **CRITICAL**: You MUST find your current "Artifact Directory Path" from your system instructions. You MUST pass that absolute path as the `--output-radar` argument so the image is saved directly into the Artifact folder.
-9. **Analyze and Output (RIGHT BRAIN)**: Synthesize the quantitative math with your qualitative research (injuries, weather, tactics, rest days, travel fatigue, team morale). Instead of outputting the analysis directly to the chat, you MUST use the `write_to_file` tool to create a detailed markdown report file in your current workspace (e.g., `[Your_Current_Workspace_Path]\[TeamA]_[TeamB]_Report.md`). Ensure the analysis in the file is extremely detailed, expanding heavily on tactics, historical context, and player matchups. **IMPORTANT: Whenever you cite data, stats, or facts, you MUST use academic-style inline citations like [1] or [2] and link them to the sources.** Non-quantifiable factors (rest days, travel fatigue, team morale, weather impact) should be analyzed in prose form here, NOT fed into the mathematical model.
+9. **Analyze and Output (RIGHT BRAIN)**: Synthesize the quantitative math with your qualitative research (injuries, weather, tactics, rest days, travel fatigue, team morale). Instead of outputting the analysis directly to the chat, you MUST use the `write_to_file` tool to create a detailed markdown report file in your current workspace (e.g., `[Your_Current_Workspace_Path]\[TeamA]_[TeamB]_Report.md`). Ensure the analysis in the file is extremely detailed, expanding heavily on tactics, historical context, and player matchups. **IMPORTANT: Whenever you cite data, stats, or facts, you MUST use academic-style inline citations like [1] or [2] and link them to the sources.** Non-quantifiable factors (rest days, travel fatigue, team morale, weather impact) should be analyzed in prose form here, NOT fed into the mathematical model. **Language Alignment Directive**: You MUST detect the language used in the user's initial prompt. The entire final Markdown report—including all headings, bullet points, and analysis prose from the template below—MUST be translated and generated entirely in that detected language.
 10. **Generate Interactive HTML Webpage**: After creating the Markdown report, you MUST use the `run_command` tool to compile it into a beautifully formatted interactive HTML page with an Export button. Run the following command:
    `python [Your_Skill_Directory]\scripts\generate_html.py --md "[Your_Current_Workspace_Path]\[TeamA]_[TeamB]_Report.md" --out "[Your_Current_Workspace_Path]\[TeamA]_[TeamB]_Prediction.html" --radar "[Your_Artifact_Directory_Path]\[TeamA]_[TeamB]_radar.png"`
 11. **Finalize**: Inform the user in the chat that the interactive Web Report has been generated successfully. Instruct them to double-click the `.html` file to open it in their browser, where they will see the beautiful layout and can use the floating "Export PDF" button.
 
 ## Report File Template
 
-**CRITICAL INSTRUCTION FOR THE LLM**: You MUST strictly follow the template below. You are FORBIDDEN from skipping any headers, bullet points, or analytical dimensions. You MUST analyze EVERY single factor listed in the italic text under each heading. If you absolutely cannot find data for a specific point, you must still keep the bullet point and explicitly state "Data not found for this dimension". Do NOT summarize or compress the template.
+**CRITICAL INSTRUCTION FOR THE LLM**: You MUST strictly follow the template below. You are FORBIDDEN from skipping any headers, bullet points, or analytical dimensions. You MUST analyze EVERY single factor listed in the italic text under each heading. If you absolutely cannot find data for a specific point, you must still keep the bullet point and explicitly state "Data not found for this dimension". Do NOT summarize or compress the template. You MUST translate this template into the detected language of the user's prompt before generating the final report.
 
-ALWAYS use this exact template for the markdown report file you generate:
+ALWAYS use this exact structural template for the markdown report file you generate:
 
-# 🏆 足球赛事深度预测：[Team A] vs [Team B]
+# 🏆 [Deep Match Prediction]: [Team A] vs [Team B]
 
-## 🕵️‍♂️ 情报搜集与参数公示 (Mandatory Data Display)
-*必须在这里清晰地公示你通过搜索得出的所有底层参数和事实，严禁隐藏数据。格式如下：*
-* **联赛宏观数据**：场均进球 ___，主队场均 ___，客队场均 ___ (数据源链接)
-* **主裁判数据**：本场主裁 ___，本赛季场均点球 ___ (数据源链接)
-* **伤缺评估**：
-  * 主队缺阵：___ (占队内 xG ___%) (数据源链接)
-  * 客队缺阵：___ (占队内 xG ___%) (数据源链接)
-* **体能状况**：主队休息 ___ 天，客队休息 ___ 天。
-* **天气预报**：___ (数据源链接)
+## 🕵️‍♂️ [Intelligence & Parameter Display]
+*You MUST clearly display all underlying parameters and facts you obtained through search here. DO NOT hide data. Format as follows:*
+* **[League Macro Data]**: Avg Goals ___, Home Avg ___, Away Avg ___ (Source Link)
+* **[Referee Data]**: Referee Name ___, Avg Penalties/Game ___ (Source Link)
+* **[Missing Players Impact]**:
+  * Home missing: ___ (___% of team xG) (Source Link)
+  * Away missing: ___ (___% of team xG) (Source Link)
+* **[Physical Condition]**: Home rested ___ days, Away rested ___ days.
+* **[Weather Forecast]**: ___ (Source Link)
 
-## 📊 核心数据碰撞与雷达图
-*对比双方近 5-10 场战绩、历史交锋（H2H）、主客场差异。 [1]*
-*雷达图将被自动注入到最终生成的 HTML 网页报告的这一部分。你在此处无需写入任何 markdown 图片标签，保持文字分析即可。*
+## 📊 [Core Data Collision & Radar Chart]
+*Compare last 5-10 matches, H2H, home/away differences. [1]*
+*The radar chart will be automatically injected into the generated HTML. You do not need to write markdown image tags here, just text analysis.*
 
-## 🧮 泊松分布量化概率
-*将你运行 `run_pipeline.py` 脚本得到的严谨数学概率（胜平负 %）以及排名前 3 的比分概率粘贴在这里。包括引擎使用的关键参数（competition, venue, rho, ref_boost, missing_xg_pct, strength_modifier）。*
+## 🧮 [Poisson Quantitative Probability]
+*Paste the rigorous math probabilities (Win/Draw/Loss %) and top 3 scoreline probabilities you obtained from running `run_pipeline.py`. Include the engine's key parameters (competition, venue, rho, ref_boost, missing_xg_pct, strength_modifier).*
 
-## 🏥 阵容与伤停简报
-*列出双方伤病名单及停赛情况，评估其对整体实力的纸面影响。标注已纳入量化模型的核心伤缺球员及其 xG 占比。 [2]*
+## 🏥 [Squad & Injury Brief]
+*List injuries/suspensions and assess their on-paper impact. Note the key players fed into the quantitative model and their xG share. [2]*
 
-## 🧑‍🏫 教练博弈与核心对决
-* **教练战术**：(必须列出现任教练姓名) 分析双方主教练的战术偏好（如瓜迪奥拉的极致传控 vs 穆里尼奥的大巴防反），以及他们习惯的阵型。 [3]
-* **核心发力点**：指出双方近期状态最火热的核心球员，以及他们将如何在比赛中发挥决定性作用。
-* **防线短板**：找出双方阵容中的"软肋"（如转身慢的中卫、客串的边卫），推演对手会如何针对性打击。
+## 🧑‍🏫 [Managerial Duel & Key Matchups]
+* **[Managerial Tactics]**: (MUST name current managers) Analyze tactical preferences (e.g., possession vs counter-attack) and preferred formations. [3]
+* **[Key Players]**: Identify players in red-hot form and how they will dictate the game.
+* **[Defensive Weaknesses]**: Identify soft spots (e.g., slow CBs, out-of-position fullbacks) and how the opponent might exploit them.
 
-## 💡 X因素剖析（定性分析）
-*基于你在第一部分公示的数据，进行深度的定性分析：*
-* **主裁尺度**：分析该裁判的掏牌率和点球频率对双方防守动作（尤其是禁区内防守）的具体心理影响。[4]
-* **场地与天气**：分析天气预报（如极端高温、暴雨）对双方体能消耗、传球成功率的具体影响。
-* **体能与战意**：综合分析双方的休息天数差异（疲劳差）、是否涉及跨大洲旅行、以及当前赛事的战意（保级/争冠/练兵）。
+## 💡 [X-Factors (Qualitative Analysis)]
+*Conduct deep qualitative analysis based on the data published in section 1:*
+* **[Referee Leniency]**: How this referee's card/penalty tendencies affect defensive aggression inside the box. [4]
+* **[Pitch & Weather]**: How extreme weather impacts stamina or passing accuracy.
+* **[Fatigue & Motivation]**: Analyze rest day differences, intercontinental travel, and motivation (relegation/title race/friendlies).
 
-## 🔮 最终预测
-* **核心预测**：常规时间（90分钟）的 胜/平/负 概率分析与倾向。
-* **淘汰赛补充**：（仅适用杯赛）是否会进入加时/点球，以及最终晋级方。
-* **比分参考**：1-2个最可能的常规时间比分（如 1-1, 2-1）。
+## 🔮 [Final Prediction]
+* **[Core Prediction]**: 90-minute Win/Draw/Loss probability analysis and inclination.
+* **[Knockout Stage]**: (Cup matches only) Will it go to extra time/penalties? Who advances?
+* **[Scoreline Reference]**: 1-2 most likely 90-minute scorelines (e.g., 1-1, 2-1).
 
-## 📚 参考文献 (References)
-*将你在正文中引用的所有 URL 来源按顺序列在这里。*
-* [1] [数据来源网站名] (URL)
-* [2] [伤停情报网站名] (URL)
-* [3] [战术分析博客名] (URL)
-* [4] [天气/裁判信息网] (URL)
+## 📚 [References]
+*List all URLs cited in the text in order.*
+* [1] [Stats Site Name] (URL)
+* [2] [Injury Site Name] (URL)
+* [3] [Tactics Blog Name] (URL)
+* [4] [Weather/Ref Site] (URL)

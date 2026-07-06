@@ -1,60 +1,40 @@
-# ⚽ Football Predictor Skill (v3.0 Industrial Grade)
+# Football Predictor Skill (足球预测智能体技能)
 
-A professional-grade, multi-agent LLM skill for predicting football (soccer) matches. This system combines deterministic mathematical modeling (Dixon-Coles Poisson Engine) with autonomous AI research and qualitative analysis.
+*An Industrial-Grade, Multi-Agent Football Match Predictor for AI Agents.*
+*工业级、多智能体协作的 AI 足球赛事预测框架。*
 
-## 🌟 Core Architecture
+## 🇬🇧 English
 
-The skill operates on a "Split-Brain" architecture:
+### Overview
+This repository contains a highly advanced, agentic skill designed for LLM-based autonomous AI agents (like Claude/Antigravity). It enables the AI to act as a professional football data analyst. Instead of relying on hallucinated internal memory, the AI is strictly instructed to execute real-time web searches, gather statistics across 8 advanced dimensions (xG, Possession, PPDA, SCA, etc.), and feed them into a quantitative Poisson distribution model before writing a deep qualitative report.
 
-1. **Left Brain (Quantitative)**: A robust Python pipeline (`run_pipeline.py` & `poisson_predict.py`) that handles hard data.
-   - Computes time-decay weighted averages (exponential decay, $\xi=0.3$) for 8 advanced performance metrics (xG, xGA, Possession, Pass%, PPDA, Duel%, SCA, ProgP).
-   - Dynamically derives Dixon-Coles parameters ($\rho$ and Home Advantage) directly from current season league statistics (goals per game, home/away splits) rather than using hardcoded lookup tables.
-   - Uses a bespoke composite strength modifier to fine-tune goal expectancies.
-   - Calculates the impact of referee penalty tendencies and missing player xG contributions.
-2. **Right Brain (Qualitative)**: The LLM acts as an elite football analyst.
-   - Performs exhaustive autonomous web searches (via Transfermarkt, FBref, Soccerstats, etc.) to gather real-time data, weather conditions, rest days, and managerial tactics.
-   - Avoids "AI hallucinations" by strictly separating facts from internal training memory.
-   - Synthesizes the mathematical probabilities with qualitative variables (e.g., travel fatigue, pitch conditions, tactical matchups) into a comprehensive Markdown report.
-3. **Data Verification Agent**: An embedded sub-agent process that acts as a "Data Proofreader" to verify scraped web tables against LLM extraction, ensuring 100% data integrity before hitting the mathematical model.
+### Key Features (v3.0)
+- **Zero Hallucination Policy**: The AI must search for real-time data, and a "Proofreader Subagent" verifies extracted tables before math execution.
+- **Dynamic Math Engine**: Calculates time-decayed exponential weights (recent matches matter more) and dynamically derives Dixon-Coles `rho` and Home Advantage based on current league averages.
+- **Advanced Contextual Parameters**: Incorporates referee penalty boost percentages and injured/suspended key players' xG shares directly into the Poisson math.
+- **i18n Support**: The LLM will automatically detect your prompt's language and output the final HTML/Markdown report in your preferred language.
+- **Beautiful Output**: Generates an interactive HTML dashboard with Radar Charts comparing the two teams.
 
-## 📂 Directory Structure
+### How to Use
+1. Clone this repository into your agent's `skills` folder.
+2. Ask your agent: *"Predict the match between Arsenal and Liverpool"* (or in any language).
+3. Wait as the agent researches, runs the python engine, and generates the final HTML report in your workspace.
 
-```text
-football-predictor/
-├── SKILL.md                  # Main LLM instruction file (Agent Prompt)
-├── README.md                 # This documentation file
-├── references/
-│   ├── advanced_factors.md   # Guidelines for analyzing qualitative X-factors
-│   └── research_protocol.md  # Standard operating procedures for data scraping
-└── scripts/
-    ├── poisson_predict.py    # v3.0 Dixon-Coles Mathematical Engine
-    ├── run_pipeline.py       # Data aggregator and weighting pipeline
-    └── generate_html.py      # Markdown to interactive HTML renderer
-```
+---
 
-## 🚀 How to Use
+## 🇨🇳 简体中文
 
-Simply load this skill into your Gemini/Claude environment and prompt the agent:
-> *"Predict the upcoming match between Arsenal and Manchester City."*
+### 项目简介
+这是一个为 LLM 智能体（如 Claude/Antigravity）打造的工业级足球赛事预测技能库。它能够让 AI 化身为专业的数据分析师。该技能严格禁止大模型使用内部记忆“凭空捏造”比分，而是强制 AI 进行实时的全网深度搜索，抓取 8 大高阶维度数据（预期进球 xG、球权、PPDA、SCA 等），并将其喂给量化的泊松分布（Poisson Distribution）引擎，最后生成深度的定性与定量分析报告。
 
-The agent will automatically:
-1. Search the web for league stats, referee info, missing players, and tactical context.
-2. Search FBref for the last 5 matches' advanced metrics.
-3. Call a sub-agent to proofread the data.
-4. Run the Python pipeline to generate a Radar Chart and Match Probabilities.
-5. Write a detailed analytical report in Markdown.
-6. Compile the report into an interactive HTML page.
+### 核心特性 (v3.0)
+- **零幻觉机制**：AI 必须实时搜索数据，并且内置了“审查子智能体（Proofreader Subagent）”对抓取的数据表进行严格的二次核对。
+- **动态数学引擎**：使用时间衰减加权（越近的比赛权重越大），并基于当前联赛的真实场均进球数，动态推导 Dixon-Coles 模型的 `rho` 值和主场优势系数。
+- **高阶语境参数**：主裁判的点球倾向、伤停核心球员的 xG（预期进球）占比等高阶数据，将直接参与泊松数学模型的计算。
+- **多语言自适应 (i18n)**：大模型会自动侦测你提问的语言，并用该语言生成最终的图文报告（无论中英日韩）。
+- **精美可视化**：自动在你的工作区生成包含“双方战力雷达图”的精美交互式 HTML 网页报告。
 
-## 🛠 Requirements
-
-- Python 3.10+
-- `scipy` (for Poisson distribution)
-- `matplotlib` (for Radar charts)
-- `pandas` & `numpy` (for data manipulation)
-- `markdown` (for HTML generation)
-
-## 🔄 Version History
-
-- **v3.0 (Industrial Grade)**: Eliminated hardcoded $\rho$ and Home Advantage constants. Implemented dynamic derivation from league stats. Added bounded data parsing constraints. Removed hardcoded workspace paths.
-- **v2.0**: Introduced the Multi-Agent proofreading workflow and the 8-dimensional time-decay weighting model.
-- **v1.0**: Initial implementation of the Dixon-Coles Poisson distribution model.
+### 如何使用
+1. 将此代码库克隆到你智能体的 `skills` 目录下。
+2. 对你的智能体说：*“帮我预测一下阿森纳对阵利物浦的比赛”*。
+3. 稍作等待，智能体将自主完成全网搜集、Python 量化引擎计算，并在你的工作区生成最终的 HTML 网页版报告。
