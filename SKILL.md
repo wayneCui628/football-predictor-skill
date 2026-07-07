@@ -15,7 +15,7 @@ Whenever you are invoked to predict a match:
 2. **Execute Exhaustive Autonomous Research (NO INTERNAL MEMORY)**: You MUST proactively use your `search_web` and `read_url_content` tools to gather ALL necessary data. **NEVER rely on your internal training memory for ANY facts.** You MUST execute dedicated searches for the following:
    - **Basic Info**: Current 2026 manager of each team.
    - **League Stats**: Current season's average goals per game, average home goals, and average away goals for the league (use soccerstats.com or fbref).
-   - **Referee**: The announced referee for the match. Once found, search their penalty stats on Transfermarkt.
+   - **Referee**: The announced referee for the match. If a general search fails, you MUST try specific queries like `"[Team A] vs [Team B] referee"` combined with `site:transfermarkt.com`, `site:soccerway.com`, or checking official federation sites (UEFA/FIFA). Do not give up easily. Once found, search their penalty stats on Transfermarkt.
    - **Injuries/Suspensions**: Current missing key players. Once found, search their season xG on FBref to calculate their share of the team's xG.
    - **Conditions**: Weather forecast for the match day/location.
    - **Fatigue**: The date of both teams' last match to calculate rest days.
