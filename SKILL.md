@@ -23,6 +23,7 @@ Whenever you are invoked to predict a match:
 3. **Follow the Research Protocol**: Read `references/research_protocol.md` BEFORE searching.
 4. **Gather Advanced Factors**: Read `references/advanced_factors.md` to understand how to incorporate weather, tactics, referees, and travel fatigue.
 5. **Extract Raw Data (LEFT BRAIN)**: 
+   - **CRITICAL DATA LAG CHECK**: Before reading any FBref tables, you MUST establish the team's "Last Match Anchor" (the exact date of their most recent game). When you open FBref, check if the bottom row matches this date. If it is missing, you MUST manually search for the missing match stats and append them. (See `research_protocol.md` Section 3).
    - Use the `search_web` and `read_url_content` tools to find the FBref match logs for the two teams.
    - Extract the last 5 matches' data for **8 dimensions**: xG, xGA (Expected Goals Against), Possession (%), Pass Completion (%), PPDA, Aerial Duel Success (%), SCA (Shot-Creating Actions), and ProgP (Progressive Passes). **DO NOT calculate the averages yourself.**
    - **CRITICAL**: On FBref, advanced stats like ProgP, SCA, and PPDA/Duels are NOT on the main match log summary page. You MUST execute separate searches or navigate to the specific sub-tabs (e.g., search for `"FBref [Team Name] Match Logs Passing"`, `"FBref [Team Name] Match Logs Shot Creation"`, or `"FBref [Team Name] Match Logs Defensive Actions"`). Do NOT falsely assume the data is missing just because it's not on the first page you check!

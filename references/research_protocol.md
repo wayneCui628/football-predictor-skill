@@ -27,7 +27,14 @@ To avoid SEO spam, fan blogs, and unreliable rumors, you MUST restrict your sear
 - **Prong 2: Micro-Target Core Players (Star Insurance)**: Never rely *solely* on broad macro searches. After Prong 1, identify the 2-3 most important star players for each team (e.g., Mbappe) and run INDIVIDUAL, exact searches for them (e.g., `"Kylian Mbappe injury news July 2026"`). This guarantees you do not miss sudden training injuries for the most critical players.
 - **Verify the Publication Date**: When you read a page (`read_url_content`), immediately look for the publication date. If the article is more than 3-5 days old during a fast-paced tournament, DISCARD IT.
 
-## 3. Cross-Validation of Critical Intelligence (核心情报交叉验证)
+## 3. Combating Statistical Data Lag (数据滞后性对抗策略)
+FBref and other statistical databases often take 24-48 hours to update after a match. To prevent using lagged data arrays (xG, Possession, etc.) or outdated goal counts:
+- **The "Last Match" Anchor**: Before extracting any data arrays, you MUST search for the team's most recent match result (e.g., `"France latest match result World Cup 2026"`). Note the exact date and opponent.
+- **Table Freshness Check**: When you open an FBref Match Log table, immediately look at the date of the bottom row. If it does NOT match your "Last Match" anchor, the database is lagged and missing the most recent game!
+- **Bridging the Gap**: If the table is lagged, you MUST execute a specific search for that missing match (e.g., `"France vs [Opponent] match stats expected goals possession [Anchor Date]"`). You must manually extract the missing match's stats from sites like Sofascore, FotMob, or BBC, and append them to your array.
+- **Live Goal Counts**: For individual player goals (e.g., Mbappe's total goals), do not rely on static database profiles. Cross-reference against fast-updating sources like `"2026 FIFA World Cup statistics site:wikipedia.org"` or search `"Mbappe goals vs [Anchor Opponent]"` to manually add any goals scored in the most recent match.
+
+## 4. Cross-Validation of Critical Intelligence (核心情报交叉验证)
 - If you find a piece of critical news (e.g., "Kevin De Bruyne is out injured"), you MUST attempt to find confirmation from a second source in the whitelist.
 - If you cannot confirm it across two sources, note it as "unconfirmed" in your analysis.
 
