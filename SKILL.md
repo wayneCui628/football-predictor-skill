@@ -25,6 +25,7 @@ Whenever you are invoked to predict a match:
 5. **Extract Raw Data (LEFT BRAIN)**: 
    - Use the `search_web` and `read_url_content` tools to find the FBref match logs for the two teams.
    - Extract the last 5 matches' data for **8 dimensions**: xG, xGA (Expected Goals Against), Possession (%), Pass Completion (%), PPDA, Aerial Duel Success (%), SCA (Shot-Creating Actions), and ProgP (Progressive Passes). **DO NOT calculate the averages yourself.**
+   - **CRITICAL**: On FBref, advanced stats like ProgP, SCA, and PPDA/Duels are NOT on the main match log summary page. You MUST execute separate searches or navigate to the specific sub-tabs (e.g., search for `"FBref [Team Name] Match Logs Passing"`, `"FBref [Team Name] Match Logs Shot Creation"`, or `"FBref [Team Name] Match Logs Defensive Actions"`). Do NOT falsely assume the data is missing just because it's not on the first page you check!
    - **Data must be in chronological order (oldest match first, newest match last)** so the time-decay weighting in Python works correctly.
 6. **Peer Review Subagent Verification (PROOFREADER CHECK)**: 
    - After you extract your initial data from a webpage, you MUST use the `invoke_subagent` tool to spawn a subagent (TypeName: "research", Role: "Data Proofreader Subagent").
