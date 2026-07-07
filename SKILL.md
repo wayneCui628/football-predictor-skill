@@ -86,8 +86,10 @@ ALWAYS use this exact structural template for the markdown report file you gener
 ## 🧮 [Poisson Quantitative Probability]
 *Paste the rigorous math probabilities (Win/Draw/Loss %) and top 3 scoreline probabilities you obtained from running `run_pipeline.py`. Include the engine's key parameters (competition, venue, rho, ref_boost, missing_xg_pct, strength_modifier).*
 
-## 🏥 [Squad & Injury Brief]
-*List injuries/suspensions and assess their on-paper impact. Note the key players fed into the quantitative model and their xG share. [2]*
+## 👥 [Starting Lineups & Tactical Shifts (首发推演与战术变阵)]
+* **[Team A Predicted XI]**: (List the 11 predicted starters based on your Triangulation research. If official lineups are unavailable, explicitly state this is an estimated XI excluding known absences). [2]
+* **[Team B Predicted XI]**: (List the 11 predicted starters based on your Triangulation research). [2]
+* **[Forced Tactical Shifts & Replacements]**: List all confirmed injuries/suspensions. Crucially, analyze how the backups (replacements) affect the team's rating, and note if the injuries force the manager to change formations (e.g., from 4-3-3 to 3-5-2). [3]
 
 ## 🧑‍🏫 [Managerial Duel & Key Matchups]
 * **[Managerial Tactics]**: (MUST name current managers) Analyze tactical preferences (e.g., possession vs counter-attack) and preferred formations. [3]
