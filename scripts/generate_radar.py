@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 plt.rcParams['font.sans-serif'] = ['Microsoft YaHei', 'SimHei', 'Arial Unicode MS']
 plt.rcParams['axes.unicode_minus'] = False
 
-def generate_radar_chart(team1, team2, stats1, stats2, output_path):
+def generate_radar_chart(team1, team2, stats1, stats2, raw1, raw2, output_path):
     # Fixed categories for the radar chart (Bilingual)
     categories = [
         'xG\n(预期进球)', 
@@ -45,11 +45,17 @@ def generate_radar_chart(team1, team2, stats1, stats2, output_path):
     values1 = stats1 + stats1[:1]
     ax.plot(angles, values1, linewidth=2, linestyle='solid', label=team1, color='#1f77b4')
     ax.fill(angles, values1, '#1f77b4', alpha=0.25)
+    for i in range(N):
+        # Annotate raw value
+        ax.text(angles[i], values1[i] + 5, f"{raw1[i]:.1f}", color='#1f77b4', size=9, ha='center', va='center', fontweight='bold')
 
     # Plot Team 2
     values2 = stats2 + stats2[:1]
     ax.plot(angles, values2, linewidth=2, linestyle='solid', label=team2, color='#ff7f0e')
     ax.fill(angles, values2, '#ff7f0e', alpha=0.25)
+    for i in range(N):
+        # Annotate raw value
+        ax.text(angles[i], values2[i] - 5, f"{raw2[i]:.1f}", color='#ff7f0e', size=9, ha='center', va='center', fontweight='bold')
 
     # Add legend
     plt.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
@@ -65,9 +71,11 @@ if __name__ == "__main__":
     parser.add_argument("--team1", type=str, required=True, help="Name of Team 1")
     parser.add_argument("--team2", type=str, required=True, help="Name of Team 2")
     
-    # Comma separated stats (8 values)
     parser.add_argument("--stats1", type=str, required=True, help="Comma separated normalized stats for Team 1 (8 values)")
     parser.add_argument("--stats2", type=str, required=True, help="Comma separated normalized stats for Team 2 (8 values)")
+    
+    parser.add_argument("--raw-stats1", type=str, default="", help="Comma separated raw stats for Team 1 (8 values)")
+    parser.add_argument("--raw-stats2", type=str, default="", help="Comma separated raw stats for Team 2 (8 values)")
     
     parser.add_argument("--output", type=str, default="radar_chart.png", help="Output file path")
     
@@ -76,10 +84,12 @@ if __name__ == "__main__":
     try:
         s1 = [float(x.strip()) for x in args.stats1.split(',')]
         s2 = [float(x.strip()) for x in args.stats2.split(',')]
+        r1 = [float(x.strip()) for x in args.raw_stats1.split(',')] if args.raw_stats1 else s1
+        r2 = [float(x.strip()) for x in args.raw_stats2.split(',')] if args.raw_stats2 else s2
         
         if len(s1) != 8 or len(s2) != 8:
             raise ValueError("Exactly 8 comma-separated values are required for stats.")
             
-        generate_radar_chart(args.team1, args.team2, s1, s2, args.output)
+        generate_radar_chart(args.team1, args.team2, s1, s2, r1, r2, args.output)
     except Exception as e:
         print(f"Error generating chart: {e}")

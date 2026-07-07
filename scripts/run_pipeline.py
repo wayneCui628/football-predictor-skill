@@ -176,10 +176,14 @@ def main():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     python_exe = sys.executable
     
+    home_raw_str = ",".join(map(str, home_stats))
+    away_raw_str = ",".join(map(str, away_stats))
+    
     radar_cmd = [
         python_exe, os.path.join(script_dir, 'generate_radar.py'),
         '--team1', args.home, '--team2', args.away,
         '--stats1', home_stat_str, '--stats2', away_stat_str,
+        '--raw-stats1', home_raw_str, '--raw-stats2', away_raw_str,
         '--output', args.output_radar
     ]
     subprocess.run(radar_cmd)
