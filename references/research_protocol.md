@@ -21,10 +21,11 @@ To avoid SEO spam, fan blogs, and unreliable rumors, you MUST restrict your sear
 - `site:fifa.com` (For official world rankings)
 - Search queries like `[National Team] squad announcement` restricted to reliable news sites.
 
-## 2. Search Syntax & Timestamp Verification (搜索语法与时效校验)
-- **Always include the current year and month** in your search query to prevent pulling matches from previous seasons.
-  - *Example Search*: `Manchester City vs Arsenal injuries site:bbc.com [Current Year] [Current Month]`
-- **Verify the Publication Date**: When you read a page (`read_url_content`), immediately look for the publication date. If the article is more than 7-10 days old, DISCARD IT. Do not use 2-year-old injury news.
+## 2. Search Syntax & Temporal Micro-Targeting (搜索语法与核心球员精确定向)
+- **Always include the current year and EXACT current month** in your search query to prevent pulling matches from previous seasons or pre-tournament previews.
+  - *Example Search*: `Morocco national team injury news July 2026`
+- **Micro-Target Core Players (CRITICAL)**: Never rely *solely* on broad macro searches (e.g., "France injuries"). You MUST identify the 2-3 most important star players for each team (e.g., Mbappe, Hakimi) and run INDIVIDUAL, exact searches for them (e.g., `"Kylian Mbappe injury news July 2026"`, `"Kylian Mbappe total goals World Cup 2026"`). This guarantees you do not miss sudden injuries or latest stats from a match that happened yesterday.
+- **Verify the Publication Date**: When you read a page (`read_url_content`), immediately look for the publication date. If the article is more than 3-5 days old during a fast-paced tournament, DISCARD IT. Do not use outdated injury news.
 
 ## 3. Cross-Validation of Critical Intelligence (核心情报交叉验证)
 - If you find a piece of critical news (e.g., "Kevin De Bruyne is out injured"), you MUST attempt to find confirmation from a second source in the whitelist.
