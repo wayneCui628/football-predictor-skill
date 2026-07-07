@@ -123,19 +123,35 @@ def main():
     h_xga  = parse_and_weighted_average(args.home_xga, 1.40, max_val=10.0)
     h_poss = parse_and_weighted_average(args.home_poss, 50.0, max_val=100.0)
     h_pass = parse_and_weighted_average(args.home_pass, 82.0, max_val=100.0)
-    h_ppda = parse_and_weighted_average(args.home_ppda, 12.0, max_val=50.0)
-    h_duel = parse_and_weighted_average(args.home_duel, 50.0, max_val=100.0)
-    h_sca  = parse_and_weighted_average(args.home_sca, 25.0, max_val=100.0)
-    h_progp = parse_and_weighted_average(args.home_progp, 40.0, max_val=200.0)
+    
+    h_ppda = parse_and_weighted_average(args.home_ppda, None, max_val=50.0)
+    h_ppda = h_ppda if h_ppda is not None else round(max(5.0, 12.0 - ((h_poss - 50.0) / 10.0) * 2.0), 2)
+    
+    h_duel = parse_and_weighted_average(args.home_duel, None, max_val=100.0)
+    h_duel = h_duel if h_duel is not None else round(min(100.0, max(0.0, 50.0 + (h_poss - 50.0) * 0.15)), 2)
+    
+    h_sca  = parse_and_weighted_average(args.home_sca, None, max_val=100.0)
+    h_sca = h_sca if h_sca is not None else round(25.0 * (h_xg / 1.40), 2)
+    
+    h_progp = parse_and_weighted_average(args.home_progp, None, max_val=200.0)
+    h_progp = h_progp if h_progp is not None else round(40.0 * (h_poss / 50.0), 2)
     
     a_xg   = parse_and_weighted_average(args.away_xg, 1.40, max_val=10.0)
     a_xga  = parse_and_weighted_average(args.away_xga, 1.40, max_val=10.0)
     a_poss = parse_and_weighted_average(args.away_poss, 50.0, max_val=100.0)
     a_pass = parse_and_weighted_average(args.away_pass, 82.0, max_val=100.0)
-    a_ppda = parse_and_weighted_average(args.away_ppda, 12.0, max_val=50.0)
-    a_duel = parse_and_weighted_average(args.away_duel, 50.0, max_val=100.0)
-    a_sca  = parse_and_weighted_average(args.away_sca, 25.0, max_val=100.0)
-    a_progp = parse_and_weighted_average(args.away_progp, 40.0, max_val=200.0)
+    
+    a_ppda = parse_and_weighted_average(args.away_ppda, None, max_val=50.0)
+    a_ppda = a_ppda if a_ppda is not None else round(max(5.0, 12.0 - ((a_poss - 50.0) / 10.0) * 2.0), 2)
+    
+    a_duel = parse_and_weighted_average(args.away_duel, None, max_val=100.0)
+    a_duel = a_duel if a_duel is not None else round(min(100.0, max(0.0, 50.0 + (a_poss - 50.0) * 0.15)), 2)
+    
+    a_sca  = parse_and_weighted_average(args.away_sca, None, max_val=100.0)
+    a_sca = a_sca if a_sca is not None else round(25.0 * (a_xg / 1.40), 2)
+    
+    a_progp = parse_and_weighted_average(args.away_progp, None, max_val=200.0)
+    a_progp = a_progp if a_progp is not None else round(40.0 * (a_poss / 50.0), 2)
     
     print(f"  {args.home}: xG:{h_xg}, xGA:{h_xga}, Poss:{h_poss}%, Pass:{h_pass}%, PPDA:{h_ppda}, Duel:{h_duel}%, SCA:{h_sca}, ProgP:{h_progp}")
     print(f"  {args.away}: xG:{a_xg}, xGA:{a_xga}, Poss:{a_poss}%, Pass:{a_pass}%, PPDA:{a_ppda}, Duel:{a_duel}%, SCA:{a_sca}, ProgP:{a_progp}")
