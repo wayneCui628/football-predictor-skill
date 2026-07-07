@@ -39,9 +39,15 @@ Whenever you are invoked to predict a match:
    - **`--league-away-goals-avg`**: Search for the average goals scored by AWAY teams per game this season (e.g., `1.20`). These three numbers allow the Python engine to dynamically derive the Dixon-Coles ρ and home advantage multiplier from real data instead of hardcoded constants.
    - **`--venue`**: Determine the venue type: `home` (standard home match), `away` (standard away match), `neutral` (neutral venue, e.g., a cup final at Wembley for non-English teams), or `host_nation` (the team IS the World Cup/Euro host nation playing in their own country).
    - **`--ref-penalty-boost`**: If you found the referee, search for their stats on Transfermarkt (total penalties awarded / total matches officiated this season). Calculate: `(referee_penalties_per_game - 0.25) * 0.76`. If the result is negative or you cannot find the data, use `0.0`.
-   - **Missing Players Impact**: For each missing player, determine if they are **Offensive** (Forward/Attacking Mid) or **Defensive** (Defender/Defensive Mid/Goalkeeper).
-     - **For OFFENSIVE players**: Search their season xG on FBref to calculate their combined share of the team's total xG. Pass this as `--home-missing-xg-pct` or `--away-missing-xg-pct` (e.g., `0.25` for 25%).
-     - **For DEFENSIVE players**: Calculate the percentage of total available minutes they have played in the current tournament/season (e.g., played 360 out of 450 minutes = `0.80`). Pass this as `--home-missing-def-pct` or `--away-missing-def-pct`. This penalizes the team's defense, increasing the opponent's goal expectancy.
+   - **Missing Players Impact (The Tactical & Rating Drop-off Protocol)**: 
+     - **Step 1: Replacement & Tactical Shift Identification**: If a key player is missing, you MUST execute a search like `"[Team] predicted lineup without [Missing Player]"` to identify their most likely replacement. You must also check if the coach is expected to change formations (e.g., switching from 4-3-3 to 3-5-2). You will note this tactical fallout for the final qualitative report.
+     - **Step 2: Calculate Missing Penalty Percentage**:
+       - **For OFFENSIVE players**: Search their season xG on FBref to calculate their combined share of the team's total xG. Pass this as `--home-missing-xg-pct` or `--away-missing-xg-pct` (e.g., `0.25` for 25%). *(Exception: If the player is a mid-season transfer or just returned from a long injury, calculate their xG share ONLY using matches since they joined/returned).*
+       - **For DEFENSIVE players (Defenders/Defensive Mids)**: Calculate a Composite Drop-off Score. 
+         1. **Quantity (Recent Starts)**: Check their starts in the team's last 5 meaningful matches. If 5 starts, Base = 1.0. If 4 starts, Base = 0.8, etc.
+         2. **Quality (Rating Drop-off)**: Search Sofascore/WhoScored for the missing player's average season rating (e.g., 7.4) and the replacement's rating (e.g., 6.6). Drop-off = 0.8.
+         3. **Final Calculation**: If Drop-off > 0.6, multiply Base by 1.25. If Drop-off < 0.2, multiply Base by 0.5. Pass the final result as `--home-missing-def-pct` or `--away-missing-def-pct`.
+       - **For GOALKEEPERS**: Search FBref for the missing keeper's **PSxG+/-** (Post-Shot Expected Goals minus Goals Allowed). If it is a high positive number (elite shot-stopper), pass a penalty of `1.0` for `--missing-def-pct`.
  8. **Run Quantitative Models (LEFT BRAIN)**: 
     - Create a dedicated folder for this match in your workspace: `[Your_Current_Workspace_Path]\[TeamA]_vs_[TeamB]\`. You will store all outputs here.
     - Pass the audited raw numbers AND all context parameters to the Python script. **Use your active workspace path and default python**:
