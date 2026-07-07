@@ -86,6 +86,8 @@ def main():
     parser.add_argument("--ref-penalty-boost", type=float, default=0.0)
     parser.add_argument("--home-missing-xg-pct", type=float, default=0.0)
     parser.add_argument("--away-missing-xg-pct", type=float, default=0.0)
+    parser.add_argument("--home-missing-def-pct", type=float, default=0.0)
+    parser.add_argument("--away-missing-def-pct", type=float, default=0.0)
     
     # Raw array inputs (comma separated, chronological order: oldest first, newest last)
     parser.add_argument("--home-xg", type=str, default="")
@@ -219,6 +221,8 @@ def main():
         '--ref-penalty-boost', str(args.ref_penalty_boost),
         '--home-missing-xg-pct', str(args.home_missing_xg_pct),
         '--away-missing-xg-pct', str(args.away_missing_xg_pct),
+        '--home-missing-def-pct', str(args.home_missing_def_pct),
+        '--away-missing-def-pct', str(args.away_missing_def_pct),
         '--strength-mod-home', str(h_mod),
         '--strength-mod-away', str(a_mod),
     ]

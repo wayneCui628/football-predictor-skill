@@ -77,6 +77,7 @@ def simulate_match(home_xg, away_xg, home_xga, away_xga,
                    league_avg_goals=0.0, league_home_goals_avg=0.0, league_away_goals_avg=0.0,
                    ref_penalty_boost=0.0,
                    home_missing_xg_pct=0.0, away_missing_xg_pct=0.0,
+                   home_missing_def_pct=0.0, away_missing_def_pct=0.0,
                    strength_mod_home=0.0, strength_mod_away=0.0):
     """
     Dixon-Coles Poisson Engine v3.0
@@ -102,13 +103,17 @@ def simulate_match(home_xg, away_xg, home_xga, away_xga,
     home_missing_factor = 1.0 - min(home_missing_xg_pct * 0.6, 0.30)
     away_missing_factor = 1.0 - min(away_missing_xg_pct * 0.6, 0.30)
     
+    # 3b. Apply defensive missing player penalties (increases opponent's expectancy)
+    home_def_penalty = 1.0 + min(home_missing_def_pct * 0.25, 0.25)
+    away_def_penalty = 1.0 + min(away_missing_def_pct * 0.25, 0.25)
+    
     # 4. Apply multi-dimensional strength modifier (from run_pipeline.py)
     home_strength = 1.0 + strength_mod_home
     away_strength = 1.0 + strength_mod_away
     
     # 5. Calculate final goal expectancy
-    home_expectancy = ((home_xg + away_xga) / 2) * effective_ha * home_missing_factor * home_strength + ref_penalty_boost
-    away_expectancy = ((away_xg + home_xga) / 2) * effective_da * away_missing_factor * away_strength + ref_penalty_boost
+    home_expectancy = ((home_xg + away_xga) / 2) * effective_ha * home_missing_factor * away_def_penalty * home_strength + ref_penalty_boost
+    away_expectancy = ((away_xg + home_xga) / 2) * effective_da * away_missing_factor * home_def_penalty * away_strength + ref_penalty_boost
     
     # Ensure non-negative
     home_expectancy = max(0.1, home_expectancy)
@@ -155,6 +160,8 @@ def print_report(args):
         ref_penalty_boost=args.ref_penalty_boost,
         home_missing_xg_pct=args.home_missing_xg_pct,
         away_missing_xg_pct=args.away_missing_xg_pct,
+        home_missing_def_pct=args.home_missing_def_pct,
+        away_missing_def_pct=args.away_missing_def_pct,
         strength_mod_home=args.strength_mod_home,
         strength_mod_away=args.strength_mod_away,
     )
@@ -224,6 +231,10 @@ if __name__ == "__main__":
                         help="Fraction of home team xG from injured/suspended players (e.g., 0.25 for 25%)")
     parser.add_argument("--away-missing-xg-pct", type=float, default=0.0,
                         help="Fraction of away team xG from injured/suspended players (e.g., 0.15 for 15%)")
+    parser.add_argument("--home-missing-def-pct", type=float, default=0.0,
+                        help="Fraction of defensive minutes missing for home team (e.g., 0.20)")
+    parser.add_argument("--away-missing-def-pct", type=float, default=0.0,
+                        help="Fraction of defensive minutes missing for away team (e.g., 0.20)")
     parser.add_argument("--strength-mod-home", type=float, default=0.0,
                         help="Composite strength modifier for home team (from run_pipeline.py)")
     parser.add_argument("--strength-mod-away", type=float, default=0.0,
