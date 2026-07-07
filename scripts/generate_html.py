@@ -236,6 +236,9 @@ def generate_html(md_path, html_path, radar_path):
 """
 
     # Save to HTML
+    output_dir = os.path.dirname(html_path)
+    if output_dir:
+        os.makedirs(output_dir, exist_ok=True)
     with open(html_path, "w", encoding="utf-8") as result_file:
         result_file.write(html_template)
 

@@ -63,6 +63,10 @@ def generate_radar_chart(team1, team2, stats1, stats2, raw1, raw2, output_path):
     plt.title(f'Bilingual Advanced Metrics | 高阶数据雷达图: {team1} vs {team2}', size=15, color='black', y=1.1)
 
     # Save to file
+    import os
+    output_dir = os.path.dirname(output_path)
+    if output_dir:
+        os.makedirs(output_dir, exist_ok=True)
     plt.savefig(output_path, bbox_inches='tight')
     print(f"Radar chart saved successfully to: {output_path}")
 
