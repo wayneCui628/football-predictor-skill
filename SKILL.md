@@ -16,7 +16,7 @@ Whenever you are invoked to predict a match:
    - **Basic Info**: Current 2026 manager of each team.
    - **League Stats**: Current season's average goals per game, average home goals, and average away goals for the league (use soccerstats.com or fbref).
    - **Referee**: The announced referee for the match. If a general search fails, you MUST try specific queries like `"[Team A] vs [Team B] referee"` combined with `site:transfermarkt.com`, `site:soccerway.com`, or checking official federation sites (UEFA/FIFA). Do not give up easily. Once found, search their penalty stats on Transfermarkt.
-   - **Injuries/Suspensions**: Current missing key players. You MUST execute individual, specific searches for the team's absolute star players (e.g. "Mbappe injury news [Current Month]") to confirm their status and latest stats, rather than just searching broadly for 'team injuries'. Once found, search their season xG on FBref to calculate their share of the team's xG.
+   - **Injuries/Suspensions (DUAL-PRONGED)**: First, search for `"[Team A] vs [Team B] team news predicted lineup [Current Month]"` to catch all missing role-players and defenders. Second, execute individual, specific searches for the team's absolute star players (e.g. "Mbappe injury news [Current Month]") as insurance to confirm their status and latest stats. Once all missing players are found, search their season xG on FBref to calculate their combined share of the team's xG.
    - **Conditions**: Weather forecast for the match day/location.
    - **Fatigue**: The date of both teams' last match to calculate rest days.
    Do not give up on finding this data. You must search exhaustively.
