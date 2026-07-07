@@ -23,7 +23,8 @@ def generate_html(md_path, html_path, radar_path):
             """
             
         # Inject radar chart right after the core data header
-        html_content = html_content.replace('<h2>📊 核心数据碰撞与雷达图</h2>', f'<h2>📊 核心数据碰撞与雷达图</h2>{img_tag}')
+        import re
+        html_content = re.sub(r'(<h2.*?>.*?雷达图.*?</h2>)', r'\1' + img_tag, html_content)
 
     # Premium HTML wrapper with Rich Aesthetics
     html_template = f"""<!DOCTYPE html>
