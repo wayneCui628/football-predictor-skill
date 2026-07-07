@@ -34,9 +34,10 @@ FBref and other statistical databases often take 24-48 hours to update after a m
 - **Bridging the Gap**: If the table is lagged, you MUST execute a specific search for that missing match (e.g., `"France vs [Opponent] match stats expected goals possession [Anchor Date]"`). You must manually extract the missing match's stats from sites like Sofascore, FotMob, or BBC, and append them to your array.
 - **Live Goal Counts**: For individual player goals (e.g., Mbappe's total goals), do not rely on static database profiles. Cross-reference against fast-updating sources like `"2026 FIFA World Cup statistics site:wikipedia.org"` or search `"Mbappe goals vs [Anchor Opponent]"` to manually add any goals scored in the most recent match.
 
-## 4. Cross-Validation of Critical Intelligence (核心情报交叉验证)
-- If you find a piece of critical news (e.g., "Kevin De Bruyne is out injured"), you MUST attempt to find confirmation from a second source in the whitelist.
-- If you cannot confirm it across two sources, note it as "unconfirmed" in your analysis.
+## 4. Cross-Validation of Critical Intelligence (零幻觉三角验证)
+- **MANDATORY TRIANGULATION**: If you find a piece of critical news (e.g., "Kevin De Bruyne is out injured" or a predicted starting lineup), you MUST attempt to find confirmation from at least **two other sources** in the whitelist (for a total of 3 sources).
+- **Tie-Breaker Rule**: If Source A says a player is starting, but Source B says they are injured, you CANNOT guess. You MUST execute a specific tie-breaker search (e.g. `"Kevin De Bruyne injury latest news"`) until you find definitive proof.
+- If you cannot confirm an injury or absence across multiple sources, note it as "unconfirmed" in your analysis, but treat the player as available for quantitative modeling.
 
 ## 4. Fact vs. Opinion (事实与观点剥离)
 - Extract ONLY objective facts: confirmed lineups, historical scores, official injury reports, xG data.
