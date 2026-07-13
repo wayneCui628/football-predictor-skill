@@ -3,10 +3,30 @@ import markdown
 import os
 import base64
 
+import re
+
+def preprocess_markdown(md_text):
+    # Regex to match list item start (e.g. "* ", "- ", "1. ", etc. with optional indentation)
+    list_item_re = re.compile(r'^\s*([-*+]|\d+\.)\s+')
+    
+    lines = md_text.split('\n')
+    new_lines = []
+    for i, line in enumerate(lines):
+        if list_item_re.match(line) and i > 0:
+            prev_line = lines[i-1]
+            # If the previous line is not empty and not a list item, insert a blank line
+            if prev_line.strip() and not list_item_re.match(prev_line):
+                new_lines.append('')
+        new_lines.append(line)
+    return '\n'.join(new_lines)
+
 def generate_html(md_path, html_path, radar_path):
     # Read markdown
     with open(md_path, 'r', encoding='utf-8') as f:
         md_text = f.read()
+
+    # Preprocess markdown to ensure list items are correctly parsed as lists
+    md_text = preprocess_markdown(md_text)
 
     # Convert MD to HTML
     html_content = markdown.markdown(md_text, extensions=['tables'])
@@ -22,9 +42,18 @@ def generate_html(md_path, html_path, radar_path):
             </div>
             """
             
-        # Inject radar chart right after the core data header
+        # Inject radar chart right after the second <h2> tag (Core Data & Radar Chart section)
+        # This is language-agnostic and won't fail if the header text is translated
         import re
-        html_content = re.sub(r'(<h2.*?>.*?雷达图.*?</h2>)', r'\1' + img_tag, html_content)
+        parts = re.split(r'(</h2>)', html_content)
+        if len(parts) > 3:
+            parts[3] = parts[3] + img_tag
+            html_content = "".join(parts)
+        elif len(parts) > 1:
+            parts[1] = parts[1] + img_tag
+            html_content = "".join(parts)
+        else:
+            html_content += img_tag
 
     # Premium HTML wrapper with Rich Aesthetics
     html_template = f"""<!DOCTYPE html>

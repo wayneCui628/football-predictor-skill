@@ -3,113 +3,94 @@ name: football-predictor
 description: Analyze and predict football match results (soccer) comprehensively and autonomously. Use this whenever the user asks to predict a football match, analyze a soccer team's chances, or wants betting/score predictions. This skill covers both club and national team matches.
 ---
 
-# Football Match Predictor
+# Football Match Predictor (Multi-Agent Architecture)
 
-A comprehensive, agent-driven skill to analyze and predict football (soccer) matches. This skill uses your native web search capabilities to act as a professional football analyst, fetching data from multiple sources to eliminate hallucination, and performing a multi-dimensional analysis before outputting a prediction.
+A highly advanced, multi-agent skill to analyze and predict football (soccer) matches. This skill utilizes parallel Subagent dispatching to ensure absolute data accuracy and exhaustive intelligence gathering.
 
-## Core Workflow
+## Core Workflow (The Agentic Pipeline)
 
-Whenever you are invoked to predict a match:
+Whenever you are invoked to predict a match, you MUST strictly follow this multi-agent pipeline:
 
-1. **Acknowledge and Plan**: Briefly acknowledge the match you are predicting.
-2. **Execute Exhaustive Autonomous Research (NO INTERNAL MEMORY)**: You MUST proactively use your `search_web` and `read_url_content` tools to gather ALL necessary data. **NEVER rely on your internal training memory for ANY facts.** You MUST execute dedicated searches for the following:
-   - **Basic Info**: Current 2026 manager of each team.
-   - **League Stats**: Current season's average goals per game, average home goals, and average away goals for the league (use soccerstats.com or fbref).
-   - **Referee**: The announced referee for the match. If a general search fails, you MUST try specific queries like `"[Team A] vs [Team B] referee"` combined with `site:transfermarkt.com`, `site:soccerway.com`, or checking official federation sites (UEFA/FIFA). Do not give up easily. Once found, search their penalty stats on Transfermarkt.
-   - **Starting Lineups & Missing Players (ZERO-HALLUCINATION TRIANGULATION)**: You MUST NOT rely on a single source. You MUST search for `"[Team A] vs [Team B] predicted lineups starting XI [Current Month] [Current Year]"` and explicitly read articles from at least **THREE distinct reputable sources** (e.g., BBC, The Athletic, SkySports, Reuters). 
-     - **[CHECKPOINT 1]**: In your internal scratchpad, you must compare the 3 predicted XIs. If Source A lists a player as injured but Source B lists them as starting, you MUST execute a specific "tie-breaker" search for that exact player (e.g. `"Saibari injury status update"`). You must definitively identify ALL injured, suspended, or dropped players based on this strict triangulation. SECOND, execute individual searches for the team's absolute star players (e.g. "Mbappe injury news [Current Month]") as insurance.
-   - **Conditions**: Weather forecast for the match day/location.
-   - **Fatigue**: The date of both teams' last match to calculate rest days.
-   Do not give up on finding this data. You must search exhaustively.
-3. **Follow the Research Protocol**: Read `references/research_protocol.md` BEFORE searching.
-4. **Gather Advanced Factors**: Read `references/advanced_factors.md` to understand how to incorporate weather, tactics, referees, and travel fatigue.
-5. **The 5-Match Master Ledger (ANTI-LAG CHECKPOINT)**: Before extracting any statistical arrays (xG, Possession, etc.), you MUST explicitly list out the team's *actual* last 5 matches (Dates and Opponents) by searching Google for their latest results. Write this "Master Ledger" in your scratchpad.
-6. **Extract Raw Data (LEFT BRAIN)**: 
-   - Extract the last 5 matches of data for BOTH teams. You must extract: **xG (Expected Goals For), xGA (Expected Goals Against), Possession, Pass Completion %, PPDA, Duel Success %, Shot-Creating Actions (SCA), and Progressive Passes (ProgP)**.
-   - **[CHECKPOINT 2]**: When reading data from FBref or other databases, you MUST cross-reference the table rows against your **5-Match Master Ledger**. If the database is missing the most recent match, you MUST manually search for that specific missing match's stats (e.g. `"France vs Morocco match stats possession xG"`) and splice it into your array. Never use lagged arrays.
-   - **DO NOT calculate the averages yourself.** Pass the raw arrays to the Python script.
-   - **CRITICAL**: On FBref, advanced stats like ProgP, SCA, and PPDA/Duels are NOT on the main match log summary page. You MUST execute separate searches or navigate to the specific sub-tabs (e.g., search for `"FBref [Team Name] Match Logs Passing"`, `"FBref [Team Name] Match Logs Shot Creation"`, or `"FBref [Team Name] Match Logs Defensive Actions"`). Do NOT falsely assume the data is missing just because it's not on the first page you check!
-   - **Data must be in chronological order (oldest match first, newest match last)** so the time-decay weighting in Python works correctly.
-6. **Peer Review Subagent Verification (PROOFREADER CHECK)**: 
-   - After you extract your initial data from a webpage, you MUST use the `invoke_subagent` tool to spawn a subagent (TypeName: "research", Role: "Data Proofreader Subagent").
-   - **Prompt for Subagent**: "I extracted the following data arrays for the [Team A] vs [Team B] match: [Insert your extracted arrays here]. I used this exact URL: [Insert your URL here]. I need you to go to this exact same URL, find the tables, and act as a strict Proofreader. Verify every single number against the webpage. Tell me if I misread a row, swapped home/away, or hallucinated any numbers. If I made a mistake, provide the corrected arrays."
-   - **Wait and Correct**: Once the subagent replies via the messaging system, carefully review its corrections. If it found an error (visual misalignment or hallucination), you MUST update your arrays with the corrected data.
-   - You may only proceed to Python execution when the subagent confirms your data arrays perfectly match the webpage.
-7. **Determine Match Context Parameters**: Before running the quantitative model, you MUST determine the following parameters from your research:
-   - **`--league-avg-goals`**: Search for the current season's average total goals per game for this competition (e.g., search "Premier League 2025-26 average goals per game site:soccerstats.com" or check the FBref league page). Pass the number (e.g., `2.75`).
-   - **`--league-home-goals-avg`**: Search for the average goals scored by HOME teams per game this season (e.g., `1.55`).
-   - **`--league-away-goals-avg`**: Search for the average goals scored by AWAY teams per game this season (e.g., `1.20`). These three numbers allow the Python engine to dynamically derive the Dixon-Coles ρ and home advantage multiplier from real data instead of hardcoded constants.
-   - **`--venue`**: Determine the venue type: `home` (standard home match), `away` (standard away match), `neutral` (neutral venue, e.g., a cup final at Wembley for non-English teams), or `host_nation` (the team IS the World Cup/Euro host nation playing in their own country).
-   - **`--ref-penalty-boost`**: If you found the referee, search for their stats on Transfermarkt (total penalties awarded / total matches officiated this season). Calculate: `(referee_penalties_per_game - 0.25) * 0.76`. If the result is negative or you cannot find the data, use `0.0`.
-   - **Missing Players Impact (The Tactical & Rating Drop-off Protocol)**: 
-     - **Step 1: Replacement & Tactical Shift Identification**: If a key player is missing, you MUST execute a search like `"[Team] predicted lineup without [Missing Player]"` to identify their most likely replacement. You must also check if the coach is expected to change formations (e.g., switching from 4-3-3 to 3-5-2). You will note this tactical fallout for the final qualitative report.
-     - **Step 2: Calculate Missing Penalty Percentage**:
-       - **For OFFENSIVE players**: Search their season xG on FBref to calculate their combined share of the team's total xG. Pass this as `--home-missing-xg-pct` or `--away-missing-xg-pct` (e.g., `0.25` for 25%). *(Exception: If the player is a mid-season transfer or just returned from a long injury, calculate their xG share ONLY using matches since they joined/returned).*
-       - **For DEFENSIVE players (Defenders/Defensive Mids)**: Calculate a Composite Drop-off Score. 
-         1. **Quantity (Recent Starts)**: Check their starts in the team's last 5 meaningful matches. If 5 starts, Base = 1.0. If 4 starts, Base = 0.8, etc.
-         2. **Quality (Rating Drop-off)**: Search Sofascore/WhoScored for the missing player's average season rating (e.g., 7.4) and the replacement's rating (e.g., 6.6). Drop-off = 0.8.
-         3. **Final Calculation**: If Drop-off > 0.6, multiply Base by 1.25. If Drop-off < 0.2, multiply Base by 0.5. Pass the final result as `--home-missing-def-pct` or `--away-missing-def-pct`.
-       - **For GOALKEEPERS**: Search FBref for the missing keeper's **PSxG+/-** (Post-Shot Expected Goals minus Goals Allowed). If it is a high positive number (elite shot-stopper), pass a penalty of `1.0` for `--missing-def-pct`.
- 8. **Run Quantitative Models (LEFT BRAIN)**: 
-    - Create a dedicated folder for this match in your workspace: `[Your_Current_Workspace_Path]\[TeamA]_vs_[TeamB]\`. You will store all outputs here.
-    - Pass the audited raw numbers AND all context parameters to the Python script. **Use your active workspace path and default python**:
-      `python [Your_Skill_Directory]\scripts\run_pipeline.py --home "Team A" --away "Team B" --output-radar "[Your_Current_Workspace_Path]\[TeamA]_vs_[TeamB]\radar.png" --league-avg-goals 2.75 --league-home-goals-avg 1.55 --league-away-goals-avg 1.20 --venue "home" --ref-penalty-boost 0.11 --home-missing-xg-pct 0.0 --away-missing-xg-pct 0.15 --home-missing-def-pct 0.20 --away-missing-def-pct 0.0 --home-xg "1.2,1.5,0.8,2.1,1.1" --home-xga "0.8,1.1,1.5,0.5,1.0" --home-poss "55,60,45,50,52" --home-pass "80,85,78,82,81" --home-ppda "10,12,8,11,9" --home-duel "50,55,48,52,51" --home-sca "20,25,18,30,22" --home-progp "40,45,35,50,42" --away-xg "..." --away-xga "..." --away-poss "..." --away-pass "..." --away-ppda "..." --away-duel "..." --away-sca "..." --away-progp "..."`
-    - *If you absolutely cannot find a specific advanced stat (like PPDA or SCA) after multiple attempts, omit that specific `--flag`, and Python will use a safe default. xG, xGA, and Possession are STRICTLY MANDATORY.*
-    - **CRITICAL**: The radar chart MUST be saved into the dedicated match folder you just created.
- 9. **Analyze and Output (RIGHT BRAIN)**: Synthesize the quantitative math with your qualitative research (injuries, weather, tactics, rest days, travel fatigue, team morale). Instead of outputting the analysis directly to the chat, you MUST use the `write_to_file` tool to create a detailed markdown report file in the dedicated match folder (e.g., `[Your_Current_Workspace_Path]\[TeamA]_vs_[TeamB]\Report.md`). Ensure the analysis in the file is extremely detailed, expanding heavily on tactics, historical context, and player matchups. **IMPORTANT: Whenever you cite data, stats, or facts, you MUST use academic-style inline citations like [1] or [2] and link them to the sources.** Non-quantifiable factors (rest days, travel fatigue, team morale, weather impact) should be analyzed in prose form here, NOT fed into the mathematical model. **Language Alignment Directive**: You MUST detect the language used in the user's initial prompt. The entire final Markdown report—including all headings, bullet points, and analysis prose from the template below—MUST be translated and generated entirely in that detected language.
- 10. **Generate Interactive HTML Webpage**: After creating the Markdown report, you MUST use the `run_command` tool to compile it into a beautifully formatted interactive HTML page with an Export button. Run the following command:
-    `python [Your_Skill_Directory]\scripts\generate_html.py --md "[Your_Current_Workspace_Path]\[TeamA]_vs_[TeamB]\Report.md" --out "[Your_Current_Workspace_Path]\[TeamA]_vs_[TeamB]\Prediction.html" --radar "[Your_Current_Workspace_Path]\[TeamA]_vs_[TeamB]\radar.png"`
- 11. **Finalize**: Inform the user in the chat that the interactive Web Report has been generated successfully in the dedicated folder. Instruct them to double-click the `Prediction.html` file to open it in their browser, where they will see the beautiful layout and can use the floating "Export PDF" button.
+### Phase 1: Parallel Subagent Dispatch
+You MUST IMMEDIATELY use the `invoke_subagent` tool to spawn TWO parallel subagents. Do NOT attempt to do the research yourself. You are the Main Coordinator and your job is to dispatch the specialists.
+
+**Subagent A: Football Data Extractor**
+- **TypeName**: `research`
+- **Role**: `FBref Data Extractor`
+- **Prompt**: "Go to FBref.com and extract the EXACT raw data for [Team A] and [Team B]. First, establish their last 5 meaningful matches. Then, extract the following 8 metrics for BOTH teams across those 5 matches: xG, xGA, Possession, Pass Completion %, PPDA, Duel Success %, Shot-Creating Actions (SCA), and Progressive Passes (ProgP). BE EXTREMELY CAREFUL reading the tables to avoid swapping columns (e.g., do not confuse GA with xGA, check if a team kept 5 clean sheets their xGA should be very low). Note: Advanced stats like ProgP, SCA, and PPDA are often on sub-tabs, not the main match log. Output your final result ONLY as a structured JSON object containing the arrays, so I can parse it easily."
+
+**Subagent B: Football Intelligence Scout**
+- **TypeName**: `research`
+- **Role**: `Intelligence Scout`
+- **Prompt**: "Perform exhaustive web research for the [Team A] vs [Team B] match. 1. Find the tournament's average goals per game. 2. Find the match referee and their penalties-per-game stat on Transfermarkt. 3. Find weather and rest days. 4. CRITICAL: Search specifically on Transfermarkt AND major news outlets for ANY injuries or suspensions (e.g., search 'Amadou Onana injury' or 'Nico Williams adductor'). Do not trust a single source if it says 'no injuries', cross-verify with recent news. 5. Calculate the missing xG penalty % for offensive absences, and the missing defense penalty % for defensive absences. 6. CRITICAL LINEUP LOGIC: Find the ACTUAL starting XI lineups of BOTH teams for their LAST 2 matches in this tournament/league. Under NO circumstances should you guess predicted lineups based on historical reputation (e.g., do not include players like Phil Foden if they are not in the current squad or were benched). Verify the actual squad list of the team for the current season. Use the logic: [Actual lineup from last match] + [adjustments for new injuries/suspensions/returns] to deduce the predicted starting XI. Output your final result ONLY as a structured JSON object containing these parameters."
+
+
+### Phase 2: Wait and Parse
+Stop and wait. You will be automatically notified via the messaging system when Subagents A and B reply with their JSON payloads. Parse their data. If any data is missing or looks suspicious (e.g., xGA is 0.6 but the team had 5 clean sheets, or missing parameters), you MUST reply to the subagent using `send_message` demanding a recount and correction.
+
+### Phase 3: The Python Engine (Quantitative)
+Once you have the audited data from both subagents:
+1. Create a dedicated folder for this match in your workspace: `[Your_Current_Workspace_Path]\[TeamA]_vs_[TeamB]\`.
+2. Run the pipeline script using the data from the subagents:
+   `python [Your_Skill_Directory]\scripts\run_pipeline.py --home "Team A" --away "Team B" --output-radar "[Your_Current_Workspace_Path]\[TeamA]_vs_[TeamB]\radar.png" --league-avg-goals ... [insert all flags based on subagent JSONs]`
+3. The script will output math probabilities (Win/Draw/Loss %) and create `radar.png`.
+
+### Phase 4: Qualitative Synthesis and Report Generation
+Synthesize the quantitative math with the intelligence from Subagent B. 
+1. Use the `write_to_file` tool to create `[Your_Current_Workspace_Path]\[TeamA]_vs_[TeamB]\Report.md`.
+2. Follow the exact Report Template (see below).
+3. Translate all headings and content into the detected language of the user's prompt. 
+4. Include academic-style inline citations [1] linking to the sources the subagents provided.
+5. CRITICAL LINEUP VERIFICATION: For the starting lineups section of the report, strictly use the actual lineups of the last 2 matches and injury adjustments provided by Subagent B. You are strictly forbidden from fabricating a lineup based on player name recognition, historical memory, or generic team templates. Ensure players listed are confirmed members of the current tournament squad.
+
+
+### Phase 5: Generate Interactive Webpage
+Run the HTML compiler:
+`python [Your_Skill_Directory]\scripts\generate_html.py --md "[Your_Current_Workspace_Path]\[TeamA]_vs_[TeamB]\Report.md" --out "[Your_Current_Workspace_Path]\[TeamA]_vs_[TeamB]\Prediction.html" --radar "[Your_Current_Workspace_Path]\[TeamA]_vs_[TeamB]\radar.png"`
+
+Finally, inform the user they can double-click `Prediction.html` to view the interactive report.
 
 ## Report File Template
 
-**CRITICAL INSTRUCTION FOR THE LLM**: You MUST strictly follow the template below. You are FORBIDDEN from skipping any headers, bullet points, or analytical dimensions. You MUST analyze EVERY single factor listed in the italic text under each heading. If you absolutely cannot find data for a specific point, you must still keep the bullet point and explicitly state "Data not found for this dimension". Do NOT summarize or compress the template. You MUST translate this template into the detected language of the user's prompt before generating the final report.
+**CRITICAL INSTRUCTION**: You MUST strictly follow the template below. You are FORBIDDEN from skipping any headers or analytical dimensions. Do NOT summarize or compress the template. You MUST translate all section headings and content into the detected language of the user's prompt.
 
-ALWAYS use this exact structural template for the markdown report file you generate:
+# 🏆 Deep Match Prediction: [Team A] vs [Team B]
 
-# 🏆 [Deep Match Prediction]: [Team A] vs [Team B]
-
-## 🕵️‍♂️ [Intelligence & Parameter Display]
-*You MUST clearly display all underlying parameters and facts you obtained through search here. DO NOT hide data. Format as follows:*
-* **[League Macro Data]**: Avg Goals ___, Home Avg ___, Away Avg ___ (Source Link)
-* **[Referee Data]**: Referee Name ___, Avg Penalties/Game ___ (Source Link)
-* **[Missing Players Impact]**:
+## 🕵️‍♂️ Intelligence & Parameter Display
+* **League Macro Data**: Avg Goals ___, Home Avg ___, Away Avg ___ (Source Link)
+* **Referee Data**: Referee Name ___, Avg Penalties/Game ___ (Source Link)
+* **Missing Players Impact**:
   * Home missing: ___ (___% of team xG) (Source Link)
   * Away missing: ___ (___% of team xG) (Source Link)
-* **[Physical Condition]**: Home rested ___ days, Away rested ___ days.
-* **[Weather Forecast]**: ___ (Source Link)
+* **Physical Condition**: Home rested ___ days, Away rested ___ days.
+* **Weather Forecast**: ___ (Source Link)
 
-## 📊 [Core Data Collision & Radar Chart]
-*Compare last 5-10 matches, H2H, home/away differences. [1]*
-*The radar chart will be automatically injected into the generated HTML. You do not need to write markdown image tags here, just text analysis.*
+## 📊 Core Data Collision & Radar Chart
+*Compare last 5 matches, H2H, home/away differences.*
+*The radar chart will be automatically injected into the generated HTML.*
 
-## 🧮 [Poisson Quantitative Probability]
-*Paste the rigorous math probabilities (Win/Draw/Loss %) and top 3 scoreline probabilities you obtained from running `run_pipeline.py`. Include the engine's key parameters (competition, venue, rho, ref_boost, missing_xg_pct, strength_modifier).*
+## 🧮 Poisson Quantitative Probability
+*Paste the rigorous math probabilities (Win/Draw/Loss %) and top 3 scoreline probabilities.*
 
-## 👥 [Starting Lineups & Tactical Shifts (首发推演与战术变阵)]
-* **[Team A Predicted XI]**: (List the 11 predicted starters based on your Triangulation research. If official lineups are unavailable, explicitly state this is an estimated XI excluding known absences). [2]
-* **[Team B Predicted XI]**: (List the 11 predicted starters based on your Triangulation research). [2]
-* **[Forced Tactical Shifts & Replacements]**: List all confirmed injuries/suspensions. Crucially, analyze how the backups (replacements) affect the team's rating, and note if the injuries force the manager to change formations (e.g., from 4-3-3 to 3-5-2). [3]
+## 👥 Starting Lineups & Tactical Shifts
+* **Team A Predicted XI**: ...
+* **Team B Predicted XI**: ...
+* **Forced Tactical Shifts & Replacements**: Analyze how absences (reported by Subagent B) force the manager to change formations or impact the team's rating.
 
-## 🧑‍🏫 [Managerial Duel & Key Matchups]
-* **[Managerial Tactics]**: (MUST name current managers) Analyze tactical preferences (e.g., possession vs counter-attack) and preferred formations. [3]
-* **[Key Players]**: Identify players in red-hot form and how they will dictate the game.
-* **[Defensive Weaknesses]**: Identify soft spots (e.g., slow CBs, out-of-position fullbacks) and how the opponent might exploit them.
+## 🧑‍🏫 Managerial Duel & Key Matchups
+* **Managerial Tactics**: ...
+* **Key Players**: ...
+* **Defensive Weaknesses**: ...
 
-## 💡 [X-Factors (Qualitative Analysis)]
-*Conduct deep qualitative analysis based on the data published in section 1:*
-* **[Referee Leniency]**: How this referee's card/penalty tendencies affect defensive aggression inside the box. [4]
-* **[Pitch & Weather]**: How extreme weather impacts stamina or passing accuracy.
-* **[Fatigue & Motivation]**: Analyze rest day differences, intercontinental travel, and motivation (relegation/title race/friendlies).
+## 💡 X-Factors (Qualitative Analysis)
+* **Referee Leniency**: ...
+* **Pitch & Weather**: ...
+* **Fatigue & Motivation**: ...
 
-## 🔮 [Final Prediction]
-* **[Core Prediction]**: 90-minute Win/Draw/Loss probability analysis and inclination.
-* **[Knockout Stage]**: (Cup matches only) Will it go to extra time/penalties? Who advances?
-* **[Scoreline Reference]**: 1-2 most likely 90-minute scorelines (e.g., 1-1, 2-1).
+## 🔮 Final Prediction
+* **Core Prediction**: 90-minute Win/Draw/Loss probability analysis and inclination.
+* **Knockout Stage**: (Cup matches only) Will it go to extra time/penalties? Who advances?
+* **Scoreline Reference**: 1-2 most likely 90-minute scorelines.
 
-## 📚 [References]
+## 📚 References
 *List all URLs cited in the text in order.*
-* [1] [Stats Site Name] (URL)
-* [2] [Injury Site Name] (URL)
-* [3] [Tactics Blog Name] (URL)
-* [4] [Weather/Ref Site] (URL)

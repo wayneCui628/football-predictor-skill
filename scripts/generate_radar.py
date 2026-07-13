@@ -45,17 +45,31 @@ def generate_radar_chart(team1, team2, stats1, stats2, raw1, raw2, output_path):
     values1 = stats1 + stats1[:1]
     ax.plot(angles, values1, linewidth=2, linestyle='solid', label=team1, color='#1f77b4')
     ax.fill(angles, values1, '#1f77b4', alpha=0.25)
-    for i in range(N):
-        # Annotate raw value
-        ax.text(angles[i], values1[i] + 5, f"{raw1[i]:.1f}", color='#1f77b4', size=9, ha='center', va='center', fontweight='bold')
 
     # Plot Team 2
     values2 = stats2 + stats2[:1]
     ax.plot(angles, values2, linewidth=2, linestyle='solid', label=team2, color='#ff7f0e')
     ax.fill(angles, values2, '#ff7f0e', alpha=0.25)
+
+    # Annotate raw values dynamically to avoid overlap (always outside, offset angularly if close)
     for i in range(N):
-        # Annotate raw value
-        ax.text(angles[i], values2[i] - 5, f"{raw2[i]:.1f}", color='#ff7f0e', size=9, ha='center', va='center', fontweight='bold')
+        val1 = values1[i]
+        val2 = values2[i]
+        
+        # Keep both labels on the outside of their respective vertices (+5)
+        r1 = val1 + 5
+        r2 = val2 + 5
+        
+        theta1 = angles[i]
+        theta2 = angles[i]
+        
+        # If they are very close radially, offset their angles to prevent overlap
+        if abs(val1 - val2) < 8:
+            theta1 = angles[i] - 0.12
+            theta2 = angles[i] + 0.12
+            
+        ax.text(theta1, r1, f"{raw1[i]:.1f}", color='#1f77b4', size=9, ha='center', va='center', fontweight='bold')
+        ax.text(theta2, r2, f"{raw2[i]:.1f}", color='#ff7f0e', size=9, ha='center', va='center', fontweight='bold')
 
     # Add legend
     plt.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
